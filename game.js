@@ -4,10 +4,45 @@ class Game {
     this.grid = [];
     this.score = 0;
     this.gameOver = false;
+    this.isFeminine = null;
 
-    this.init();
+    // 初始化音频上下文
+    this.audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+
     this.addKeyboardListener();
     this.setupNewGameButton();
+    this.showGenderDialog();
+  }
+
+  showGenderDialog() {
+    const dialog = document.createElement("div");
+    dialog.className = "gender-dialog";
+    dialog.innerHTML = `
+      <div class="dialog-content">
+        <h2>Do you want to be a girl?</h2>
+        <div class="dialog-buttons">
+          <button id="yes-btn">Yes</button>
+          <button id="no-btn">No</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(dialog);
+
+    // 添加按钮事件
+    document.getElementById("yes-btn").onclick = () => {
+      this.isFeminine = true;
+      document.querySelector(".score-title").textContent = "FEMININITY";
+      dialog.remove();
+      this.init(); // 选择后才初始化游戏
+    };
+
+    document.getElementById("no-btn").onclick = () => {
+      this.isFeminine = false;
+      document.querySelector(".score-title").textContent = "MASCULINITY";
+      dialog.remove();
+      this.init(); // 选择后才初始化游戏
+    };
   }
 
   init() {
@@ -39,7 +74,19 @@ class Game {
   }
 
   addKeyboardListener() {
-    document.addEventListener("keydown", (e) => {
+    // 先移除可能存在的旧监听器
+    document.removeEventListener("keydown", this.handleKeyDown);
+
+    // 将事件处理函数保存为实例属性
+    this.handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        // 清理当前游戏状态
+        const tiles = document.querySelectorAll(".tile");
+        tiles.forEach((tile) => tile.remove());
+        this.showGenderDialog();
+        return;
+      }
+
       if (this.gameOver) return;
 
       let moved = false;
@@ -72,7 +119,9 @@ class Game {
           this.showGameOver();
         }
       }
-    });
+    };
+
+    document.addEventListener("keydown", this.handleKeyDown);
   }
 
   setupNewGameButton() {
@@ -94,50 +143,9 @@ class Game {
     if (emptyCells.length > 0) {
       const { x, y } =
         emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      const value = Math.random() < 0.5 ? 2 : 1;
-      this.grid[x][y] = value;
-      this.createTileElement(x, y, value, true);
+      this.grid[x][y] = Math.random() < 0.5 ? 2 : 1;
+      this.createTileElement(x, y, this.grid[x][y], true);
     }
-  }
-
-  getPrimeFactors(num) {
-    if (num <= 1) return { twos: 0, threes: 0 };
-    let twos = 0,
-      threes = 0;
-    let n = num;
-
-    while (n % 2 === 0) {
-      twos++;
-      n = n / 2;
-    }
-
-    while (n % 3 === 0) {
-      threes++;
-      n = n / 3;
-    }
-
-    return { twos, threes };
-  }
-
-  getTileColor(value) {
-    if (value === 1) return "#FFFFF0"; // 象牙白
-    if (value === 2) return "#3CB371"; // 翡翠绿
-    if (value === 3) return "#4169E1"; // 宝蓝色
-
-    const { twos, threes } = this.getPrimeFactors(value);
-    const total = twos + threes;
-    if (total === 0) return "#FFFFF0";
-
-    const greenRatio = twos / total;
-    const blueRatio = threes / total;
-
-    // 使用新的基础颜色进行混合
-    const green = Math.round(0x78 * greenRatio + 0x17 * blueRatio);
-    const blue = Math.round(0x92 * greenRatio + 0xb0 * blueRatio);
-
-    return `rgb(${Math.round(
-      0x78 * greenRatio + 0x17 * blueRatio
-    )}, ${green}, ${blue})`;
   }
 
   createTileElement(x, y, value, isNew = false) {
@@ -152,8 +160,95 @@ class Game {
     tile.style.width = `${cellSize}px`;
     tile.style.height = `${cellSize}px`;
     tile.style.backgroundColor = this.getTileColor(value);
-    tile.style.color = value === 1 ? "#000000" : "#FFFFFF";
+    // 在 masculinity 模式下反转文字颜色
+    const textColor = value === 1 ? "#000000" : "#FFFFFF";
+    tile.style.color = !this.isFeminine
+      ? value === 1
+        ? "#FFFFFF"
+        : "#000000"
+      : textColor;
     document.querySelector(".game-container").appendChild(tile);
+  }
+
+  getTileColor(value) {
+    if (value === 0) return "#cdc1b4";
+    if (this.isFeminine === null) return "#FFFFF0"; // 如果性别未选择，返回默认颜色
+
+    function getPrimeFactors(num) {
+      let count2 = 0,
+        count3 = 0;
+      let n = num;
+
+      while (n % 2 === 0) {
+        count2++;
+        n = n / 2;
+      }
+
+      while (n % 3 === 0) {
+        count3++;
+        n = n / 3;
+      }
+
+      return { count2, count3 };
+    }
+
+    const { count2, count3 } = getPrimeFactors(value);
+    const total = count2 + count3;
+
+    // 跨性别旗的蓝色和粉色的RGB值
+    const transBlue = { r: 85, g: 205, b: 252 }; // #55CDFC
+    const transPink = { r: 247, g: 168, b: 184 }; // #F7A8B8
+
+    // 根据2和3的比例混合颜色
+    var r, g, b;
+    if (total === 0) {
+      (r = 255), (g = 255), (b = 240);
+    } else {
+      const ratio = count3 / total;
+      r = Math.round(transBlue.r * (1 - ratio) + transPink.r * ratio);
+      g = Math.round(transBlue.g * (1 - ratio) + transPink.g * ratio);
+      b = Math.round(transBlue.b * (1 - ratio) + transPink.b * ratio);
+    }
+    // 如果是 masculinity 模式，反转颜色
+    if (!this.isFeminine) {
+      return `#${(255 - r).toString(16).padStart(2, "0")}${(255 - g)
+        .toString(16)
+        .padStart(2, "0")}${(255 - b).toString(16).padStart(2, "0")}`;
+    }
+
+    return `#${r.toString(16).padStart(2, "0")}${g
+      .toString(16)
+      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  }
+
+  playMergeSound(value) {
+    const oscillator = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+
+    // 计算频率
+    let frequency = value;
+    while (frequency > 2) {
+      frequency /= 2;
+    }
+    if (Math.random() < Math.log2(frequency) * 0.5) {
+      frequency /= 2;
+    }
+    frequency *= 256;
+
+    oscillator.type = "triangle";
+    oscillator.frequency.value = frequency;
+
+    gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      this.audioContext.currentTime + 0.5
+    );
+
+    oscillator.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(this.audioContext.currentTime + 0.5);
   }
 
   move(direction) {
@@ -161,28 +256,28 @@ class Game {
     const newGrid = JSON.parse(JSON.stringify(this.grid));
 
     const moveAndMerge = (line) => {
-      // 移除所有0
       line = line.filter((cell) => cell !== 0);
 
-      // 合并相邻的方块
+      const gcd = (a, b) => {
+        if (b === 0) return a;
+        return gcd(b, a % b);
+      };
+
       for (let i = 0; i < line.length - 1; i++) {
-        if (
-          line[i] === line[i + 1] ||
-          line[i] === 2 * line[i + 1] ||
-          line[i] * 2 === line[i + 1] ||
-          line[i] === 3 * line[i + 1] ||
-          line[i] * 3 === line[i + 1] ||
-          line[i] === 8 * line[i + 1] ||
-          line[i] * 8 === line[i + 1]
-        ) {
+        const a = line[i];
+        const b = line[i + 1];
+        const commonGcd = gcd(a, b);
+        const sum = a / commonGcd + b / commonGcd;
+
+        if (sum === 2 || sum === 4 || sum === 3 || sum === 9) {
           line[i] = line[i] + line[i + 1];
           this.score += line[i];
           document.querySelector(".score").textContent = this.score;
+          this.playMergeSound(line[i]); // 播放合并音效
           line.splice(i + 1, 1);
         }
       }
 
-      // 补充0
       while (line.length < this.size) {
         line.push(0);
       }
@@ -238,28 +333,22 @@ class Game {
     moved = JSON.stringify(this.grid) !== JSON.stringify(newGrid);
 
     if (moved) {
-      // 更新网格
+      // 清除所有现有方块
+      const tiles = document.querySelectorAll(".tile");
+      tiles.forEach((tile) => tile.remove());
+
+      // 更新网格并创建新的方块元素
       this.grid = newGrid;
-      // 更新UI
-      this.updateUI();
-    }
-
-    return moved;
-  }
-
-  updateUI() {
-    // 清除所有现有方块
-    const tiles = document.querySelectorAll(".tile");
-    tiles.forEach((tile) => tile.remove());
-
-    // 重新创建方块
-    for (let i = 0; i < this.size; i++) {
-      for (let j = 0; j < this.size; j++) {
-        if (this.grid[i][j] !== 0) {
-          this.createTileElement(i, j, this.grid[i][j]);
+      for (let i = 0; i < this.size; i++) {
+        for (let j = 0; j < this.size; j++) {
+          if (this.grid[i][j] !== 0) {
+            this.createTileElement(i, j, this.grid[i][j]);
+          }
         }
       }
     }
+
+    return moved;
   }
 
   isGameOver() {
@@ -278,19 +367,13 @@ class Game {
         // 检查右边
         if (j < this.size - 1) {
           const right = this.grid[i][j + 1];
-          if (
-            current === right ||
-            current * 2 === right ||
-            current === right * 2
-          )
-            return false;
+          if (current === right) return false;
         }
 
         // 检查下边
         if (i < this.size - 1) {
           const down = this.grid[i + 1][j];
-          if (current === down || current * 2 === down || current === down * 2)
-            return false;
+          if (current === down) return false;
         }
       }
     }
