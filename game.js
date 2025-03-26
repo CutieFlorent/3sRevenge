@@ -159,14 +159,20 @@ class Game {
     tile.style.top = `${x * (cellSize + gap) + offset}px`;
     tile.style.width = `${cellSize}px`;
     tile.style.height = `${cellSize}px`;
-    tile.style.backgroundColor = this.getTileColor(value);
-    // 在 masculinity 模式下反转文字颜色
-    const textColor = value === 1 ? "#000000" : "#FFFFFF";
-    tile.style.color = !this.isFeminine
-      ? value === 1
-        ? "#FFFFFF"
-        : "#000000"
-      : textColor;
+
+    const backgroundColor = this.getTileColor(value);
+    tile.style.backgroundColor = backgroundColor;
+
+    // 计算背景色的亮度
+    const color = backgroundColor.substring(1); // 移除#
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+    // 根据亮度决定文字颜色
+    tile.style.color = brightness > 128 ? "#000000" : "#FFFFFF";
+
     document.querySelector(".game-container").appendChild(tile);
   }
 
@@ -176,39 +182,54 @@ class Game {
 
     function getPrimeFactors(num) {
       let count2 = 0,
-        count3 = 0;
+        count3 = 0,
+        count5 = 0;
       let n = num;
 
       while (n % 2 === 0) {
         count2++;
         n = n / 2;
       }
-
       while (n % 3 === 0) {
         count3++;
         n = n / 3;
       }
+      while (n % 5 === 0) {
+        count5++;
+        n = n / 5;
+      }
 
-      return { count2, count3 };
+      return { count2, count3, count5 };
     }
 
-    const { count2, count3 } = getPrimeFactors(value);
-    const total = count2 + count3;
+    const { count2, count3, count5 } = getPrimeFactors(value);
+    const total = count2 + count3 + count5;
 
-    // 跨性别旗的蓝色和粉色的RGB值
+    // 跨性别旗的白色、蓝色和粉色的RGB值
+    const transWhite = { r: 255, g: 255, b: 240 }; // #FFFFF0
     const transBlue = { r: 85, g: 205, b: 252 }; // #55CDFC
     const transPink = { r: 247, g: 168, b: 184 }; // #F7A8B8
 
-    // 根据2和3的比例混合颜色
+    // 根据2、3和5的比例混合颜色
     var r, g, b;
     if (total === 0) {
-      (r = 255), (g = 255), (b = 240);
+      return "#FFFFF0";
     } else {
-      const ratio = count3 / total;
-      r = Math.round(transBlue.r * (1 - ratio) + transPink.r * ratio);
-      g = Math.round(transBlue.g * (1 - ratio) + transPink.g * ratio);
-      b = Math.round(transBlue.b * (1 - ratio) + transPink.b * ratio);
+      const ratio2 = count2 / total;
+      const ratio3 = count3 / total;
+      const ratio5 = count5 / total;
+
+      r = Math.round(
+        transWhite.r * ratio2 + transBlue.r * ratio3 + transPink.r * ratio5
+      );
+      g = Math.round(
+        transWhite.g * ratio2 + transBlue.g * ratio3 + transPink.g * ratio5
+      );
+      b = Math.round(
+        transWhite.b * ratio2 + transBlue.b * ratio3 + transPink.b * ratio5
+      );
     }
+
     // 如果是 masculinity 模式，反转颜色
     if (!this.isFeminine) {
       return `#${(255 - r).toString(16).padStart(2, "0")}${(255 - g)
@@ -269,7 +290,7 @@ class Game {
         const commonGcd = gcd(a, b);
         const sum = a / commonGcd + b / commonGcd;
 
-        if (sum === 2 || sum === 4 || sum === 3 || sum === 9) {
+        if (sum === 2 || sum === 4 || sum === 3 || sum === 5 || sum === 6) {
           line[i] = line[i] + line[i + 1];
           this.score += line[i];
           document.querySelector(".score").textContent = this.score;
