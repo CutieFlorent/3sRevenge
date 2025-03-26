@@ -5,6 +5,8 @@ class Game {
     this.score = 0;
     this.gameOver = false;
     this.isFeminine = null;
+    this.autoMode = false;
+    this.autoInterval = null;
 
     // 初始化音频上下文
     this.audioContext = new (window.AudioContext ||
@@ -12,7 +14,42 @@ class Game {
 
     this.addKeyboardListener();
     this.setupNewGameButton();
+    this.setupAutoButton();
     this.showGenderDialog();
+  }
+
+  setupAutoButton() {
+    const autoButton = document.querySelector(".auto-button");
+    autoButton.addEventListener("click", () => {
+      if (this.autoMode) {
+        // 停止自动模式
+        this.autoMode = false;
+        clearInterval(this.autoInterval);
+        autoButton.classList.remove("active");
+      } else {
+        // 开始自动模式
+        this.autoMode = true;
+        autoButton.classList.add("active");
+        this.autoInterval = setInterval(() => {
+          if (!this.gameOver) {
+            const directions = ["up", "down", "left", "right"];
+            const randomDirection =
+              directions[Math.floor(Math.random() * directions.length)];
+            const moved = this.move(randomDirection);
+            if (moved) {
+              this.addNewTile();
+              if (this.isGameOver()) {
+                this.showGameOver();
+                // 游戏结束时停止自动模式
+                this.autoMode = false;
+                clearInterval(this.autoInterval);
+                autoButton.classList.remove("active");
+              }
+            }
+          }
+        }, 20); // 每200毫秒移动一次
+      }
+    });
   }
 
   showGenderDialog() {
@@ -254,9 +291,11 @@ class Game {
     if (Math.random() < Math.log2(frequency) * 0.5) {
       frequency /= 2;
     }
-    frequency *= 256;
+    // masculinity模式使用不同的频率系数
+    frequency *= this.isFeminine ? 256 : 128;
 
-    oscillator.type = "triangle";
+    // masculinity模式使用方波，feminine模式使用三角波
+    oscillator.type = this.isFeminine ? "triangle" : "square";
     oscillator.frequency.value = frequency;
 
     gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
@@ -288,9 +327,17 @@ class Game {
         const a = line[i];
         const b = line[i + 1];
         const commonGcd = gcd(a, b);
-        const sum = a / commonGcd + b / commonGcd;
+        const na = a / commonGcd;
+        const nb = b / commonGcd;
+        const sum = na + nb;
 
-        if (sum === 2 || sum === 4 || sum === 3 || sum === 5 || sum === 6) {
+        if (
+          sum === 2 ||
+          sum === 4 ||
+          sum === 3 ||
+          nb === 4 * na ||
+          na === 4 * nb
+        ) {
           line[i] = line[i] + line[i + 1];
           this.score += line[i];
           document.querySelector(".score").textContent = this.score;

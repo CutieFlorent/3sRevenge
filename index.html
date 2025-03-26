@@ -185,6 +185,22 @@
         font-weight: bold;
         margin-top: 20px;
       }
+
+      .auto-button {
+        background: #8f7a66;
+        border: none;
+        border-radius: 3px;
+        padding: 0 20px;
+        color: #f9f6f2;
+        height: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .auto-button.active {
+        background: #f7a8b8;
+      }
     </style>
   </head>
   <body>
@@ -202,14 +218,14 @@
       <div class="title">
         3's Revenge
         <div class="rules">
-          Tiles can be merged when their values<br />have a ratio of 1, 2, 3, or
-          8
+          Two blocks which the one is 1,2,3,4 times of the other can merge.
         </div>
       </div>
       <div class="score-container">
         <div class="score-title">SCORE</div>
         <div class="score">0</div>
       </div>
+      <button class="auto-button">Auto</button>
     </div>
 
     <div class="game-container">
