@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Overdose</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #faf8ef;
+            font-family: Arial, sans-serif;
+        }
+        .game-container {
+            position: relative;
+            width: 525px;
+            height: 525px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            padding: 15px;
+            background-color: #bbada0;
+            border-radius: 6px;
+        }
+        .cell {
+            width: 75px;
+            height: 75px;
+            background-color: rgba(238, 228, 218, 0.35);
+            border-radius: 3px;
+        }
+        .tile {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 3px;
+            transition: all 0.15s ease-in-out;
+            z-index: 1;
+        }
+        .tile-new {
+            animation: appear 0.2s;
+        }
+        @keyframes appear {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        .score-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .score-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .score {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .game-over {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(238, 228, 218, 0.73);
+            z-index: 100;
+            text-align: center;
+            animation: fade-in 0.8s ease;
+        }
+        .game-over-text {
+            margin-top: 45%;
+            font-size: 60px;
+            font-weight: bold;
+        }
+        .new-game-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #8f7a66;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .new-game-button:hover {
+            background-color: #9f8a76;
+        }
+        .gender-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .dialog-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .dialog-buttons {
+            margin-top: 20px;
+        }
+        .dialog-buttons button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Overdose</h1>
+    <div class="score-container">
+        <div class="score-title">SCORE</div>
+        <div class="score">0</div>
+    </div>
+    <button class="new-game-button">New Game</button>
+    <div class="game-container">
+        <div class="grid"></div>
+        <div class="game-over">
+            <div class="game-over-text">Game Over!</div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
