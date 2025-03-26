@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -222,3 +223,229 @@
     <script src="game.js"></script>
   </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3's Revenge</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #faf8ef;
+        font-family: Arial, sans-serif;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 525px;
+        margin: 0px;
+      }
+
+      .title {
+        font-size: 40px;
+        font-weight: bold;
+        color: #776e65;
+        text-align: center;
+      }
+
+      .score-container {
+        background: #bbada0;
+        padding: 15px 25px;
+        border-radius: 6px;
+        color: white;
+        text-align: center;
+      }
+
+      .score-title {
+        font-size: 13px;
+        color: #eee4da;
+      }
+
+      .score {
+        font-size: 25px;
+        font-weight: bold;
+      }
+
+      .game-container {
+        width: 525px;
+        height: 525px;
+        background: #bbada0;
+        border-radius: 6px;
+        padding: 15px;
+        position: relative;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-gap: 15px;
+        width: 100%;
+        height: 100%;
+      }
+
+      .cell {
+        background: rgba(238, 228, 218, 0.35);
+        border-radius: 3px;
+      }
+
+      .tile {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 75px;
+        height: 75px;
+        background: #eee4da;
+        border-radius: 3px;
+        font-size: 35px;
+        font-weight: bold;
+        color: #776e65;
+        transition: all 0.15s ease-in-out;
+      }
+
+      .tile-new {
+        animation: tile-appear 0.2s ease-in-out;
+      }
+
+      @keyframes tile-appear {
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .game-over {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(238, 228, 218, 0.73);
+        z-index: 100;
+        text-align: center;
+        animation: fade-in 800ms ease;
+      }
+
+      .game-over-text {
+        margin-top: 45%;
+        font-size: 60px;
+        font-weight: bold;
+        color: #776e65;
+      }
+
+      @keyframes fade-in {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* 添加性别选择对话框样式 */
+      .gender-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .dialog-content {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .dialog-buttons {
+        margin-top: 20px;
+      }
+
+      .dialog-buttons button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      #yes-btn {
+        background: #f7a8b8;
+        color: white;
+      }
+
+      #no-btn {
+        background: #55cdfc;
+        color: white;
+      }
+
+      .new-game-button {
+        display: inline-block;
+        background: #8f7a66;
+        border-radius: 3px;
+        padding: 0 20px;
+        text-decoration: none;
+        color: #f9f6f2;
+        height: 40px;
+        line-height: 42px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <style>
+      .rules {
+        font-size: 16px;
+        color: #776e65;
+        text-align: center;
+        margin-bottom: 15px;
+        line-height: 1.5;
+        padding: 0 20px;
+      }
+    </style>
+    <div class="header">
+      <div class="title">
+        3's Revenge
+        <div class="rules">
+          Tiles can be merged when their values<br />have a ratio of 1, 2, 3, or
+          8
+        </div>
+      </div>
+      <div class="score-container">
+        <div class="score-title">SCORE</div>
+        <div class="score">0</div>
+      </div>
+    </div>
+
+    <div class="game-container">
+      <div class="grid"></div>
+      <div class="game-over">
+        <div class="game-over-text">Game Over!</div>
+        <div class="new-game-button">Try Again</div>
+      </div>
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>
+>>>>>>> 4993d0fa75a8d6ebf8632b2b4d03f5f6b0fa8d5d
