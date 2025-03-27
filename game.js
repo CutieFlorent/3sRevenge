@@ -248,10 +248,8 @@ class Game {
     tile.className = isNew ? "tile tile-new" : "tile";
     tile.textContent = value;
 
-    // 获取容器宽度来计算方块大小
-    const container = document.querySelector(".game-container");
-    const containerWidth = container.offsetWidth;
-    const cellSize = (containerWidth - 30 - (this.size - 1) * 15) / this.size; // 30是容器的padding，15是gap
+    // 使用固定大小
+    const cellSize = 75; // 固定大小
     const gap = 15;
     const offset = 15;
 
@@ -259,7 +257,7 @@ class Game {
     tile.style.top = `${x * (cellSize + gap) + offset}px`;
     tile.style.width = `${cellSize}px`;
     tile.style.height = `${cellSize}px`;
-    tile.style.fontSize = `${cellSize / 2}px`; // 字体大小随方块大小变化
+    tile.style.fontSize = "35px"; // 固定字体大小
 
     const backgroundColor = this.getTileColor(value);
     tile.style.backgroundColor = backgroundColor;
