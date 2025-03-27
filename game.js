@@ -13,21 +13,80 @@ class Game {
       window.webkitAudioContext)();
 
     this.addKeyboardListener();
+    this.addTouchListener();
     this.setupNewGameButton();
     this.setupAutoButton();
     this.showGenderDialog();
+  }
+
+  addTouchListener() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const gameContainer = document.querySelector(".game-container");
+
+    gameContainer.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+
+    gameContainer.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+
+    gameContainer.addEventListener(
+      "touchend",
+      (e) => {
+        if (this.gameOver) return;
+
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+
+        const minSwipeDistance = 30;
+
+        let moved = false;
+
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > minSwipeDistance) {
+          moved = this.move(dx > 0 ? "right" : "left");
+        } else if (
+          Math.abs(dy) > Math.abs(dx) &&
+          Math.abs(dy) > minSwipeDistance
+        ) {
+          moved = this.move(dy > 0 ? "down" : "up");
+        }
+
+        if (moved) {
+          this.addNewTile();
+          if (this.isGameOver()) {
+            this.showGameOver();
+          }
+        }
+
+        e.preventDefault();
+      },
+      { passive: false }
+    );
   }
 
   setupAutoButton() {
     const autoButton = document.querySelector(".auto-button");
     autoButton.addEventListener("click", () => {
       if (this.autoMode) {
-        // 停止自动模式
         this.autoMode = false;
         clearInterval(this.autoInterval);
         autoButton.classList.remove("active");
       } else {
-        // 开始自动模式
         this.autoMode = true;
         autoButton.classList.add("active");
         this.autoInterval = setInterval(() => {
@@ -40,14 +99,13 @@ class Game {
               this.addNewTile();
               if (this.isGameOver()) {
                 this.showGameOver();
-                // 游戏结束时停止自动模式
                 this.autoMode = false;
                 clearInterval(this.autoInterval);
                 autoButton.classList.remove("active");
               }
             }
           }
-        }, 20); // 每200毫秒移动一次
+        }, 2.6);
       }
     });
   }

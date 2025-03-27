@@ -2,8 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3's Revenge</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>3&5's Revenge</title>
     <style>
       body {
         display: flex;
@@ -201,6 +204,31 @@
       .auto-button.active {
         background: #f7a8b8;
       }
+      /* 添加移动端触摸样式 */
+      @media (max-width: 768px) {
+        .header {
+          width: 100%;
+          padding: 0 15px;
+          box-sizing: border-box;
+        }
+
+        .game-container {
+          width: 100%;
+          height: auto;
+          aspect-ratio: 1;
+          padding: 10px;
+        }
+
+        .grid {
+          grid-gap: 10px;
+        }
+
+        .tile {
+          width: calc((100vw - 40px) / 6);
+          height: calc((100vw - 40px) / 6);
+          font-size: calc((100vw - 40px) / 18);
+        }
+      }
     </style>
   </head>
   <body>
@@ -216,7 +244,7 @@
     </style>
     <div class="header">
       <div class="title">
-        3's Revenge
+        3&5's Revenge
         <div class="rules">
           Two blocks which the one is 1,2,3,4 times of the other can merge.
         </div>
