@@ -30,10 +30,43 @@ class Game {
 
   setupRuleToggles() {
     ["rule1", "rule2", "rule3", "rule4", "rule5"].forEach((ruleId) => {
-      document.getElementById(ruleId).addEventListener("change", (e) => {
-        this.rules[ruleId] = e.target.checked; // 使用 e.target.checked 替代 e.checked
+      const checkbox = document.getElementById(ruleId);
+      // 初始状态设置为开启
+      checkbox.checked = true;
+      this.rules[ruleId] = true;
+
+      checkbox.addEventListener("change", (e) => {
+        // 直接根据开关状态启用/禁用规则
+        this.rules[ruleId] = e.target.checked;
+
+        // 播放开关音效
+        if (e.target.checked) {
+          this.playToggleSound(384);
+        } else {
+          this.playToggleSound(256);
+        }
+
+        // 更新可合并的方块状态
+        this.updateMergeable();
       });
     });
+  }
+
+  // 在 canMerge 方法中使用规则状态
+  canMerge(tile1, tile2) {
+    const value1 = parseInt(tile1.textContent);
+    const value2 = parseInt(tile2.textContent);
+    const max = Math.max(value1, value2);
+    const min = Math.min(value1, value2);
+
+    // 根据规则开关状态判断是否可以合并
+    if (min === max && this.rules.rule1) return true; // 1n + 1n = 2n
+    if (min * 2 === max && this.rules.rule2) return true; // 1n + 2n = 3n
+    if (min * 3 === max && this.rules.rule3) return true; // 1n + 3n = 4n
+    if (min * 4 === max && this.rules.rule4) return true; // 1n + 4n = 5n
+    if (min * 5 === max && this.rules.rule5) return true; // 1n + 5n = 6n
+
+    return false;
   }
 
   addTouchListener() {
