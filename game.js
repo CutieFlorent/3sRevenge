@@ -12,11 +12,28 @@ class Game {
     this.audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
 
+    this.rules = {
+      rule1: true,
+      rule2: true,
+      rule3: true,
+      rule4: true,
+      rule5: true,
+    };
+
     this.addKeyboardListener();
     this.addTouchListener();
     this.setupNewGameButton();
     this.setupAutoButton();
+    this.setupRuleToggles(); // 添加这行
     this.showGenderDialog();
+  }
+
+  setupRuleToggles() {
+    ["rule1", "rule2", "rule3", "rule4", "rule5"].forEach((ruleId) => {
+      document.getElementById(ruleId).addEventListener("change", (e) => {
+        this.rules[ruleId] = e.target.checked; // 使用 e.target.checked 替代 e.checked
+      });
+    });
   }
 
   addTouchListener() {
@@ -391,14 +408,14 @@ class Game {
         const commonGcd = gcd(a, b);
         const na = a / commonGcd;
         const nb = b / commonGcd;
-        const sum = na + nb;
+        const ratio = Math.max(na, nb) / Math.min(na, nb);
 
         if (
-          sum === 2 ||
-          sum === 4 ||
-          sum === 3 ||
-          nb === 4 * na ||
-          na === 4 * nb
+          (this.rules.rule1 && ratio === 1) ||
+          (this.rules.rule2 && ratio === 2) ||
+          (this.rules.rule3 && ratio === 3) ||
+          (this.rules.rule4 && ratio === 4) ||
+          (this.rules.rule5 && ratio === 5)
         ) {
           line[i] = line[i] + line[i + 1];
           this.score += line[i];
