@@ -451,10 +451,18 @@ class Game {
           (this.rules.rule5 && ratio === 5)
         ) {
           line[i] = line[i] + line[i + 1];
-          this.score += line[i];
+          // this.score += line[i];
           document.querySelector(".score").textContent = this.score;
           this.playMergeSound(line[i]); // 播放合并音效
           line.splice(i + 1, 1);
+        }
+      }
+      this.score = 0;
+      for (let i = 0; i < this.size; i++) {
+        for (let j = 0; j < this.size; j++) {
+          if (this.grid[i][j] !== 0) {
+            this.score += this.gridScore(this.grid[i][j]);
+          }
         }
       }
 
@@ -518,6 +526,7 @@ class Game {
       tiles.forEach((tile) => tile.remove());
 
       // 更新网格并创建新的方块元素
+      // this.score = 0;
       this.grid = newGrid;
       for (let i = 0; i < this.size; i++) {
         for (let j = 0; j < this.size; j++) {
@@ -559,6 +568,15 @@ class Game {
     }
 
     return true;
+  }
+  gridScore(grid) {
+    let grid_copy = grid;
+    let score = grid;
+    while (grid_copy % 15 == 0) {
+      score *= 15;
+      grid_copy /= 15;
+    }
+    return score;
   }
 
   showGameOver() {
