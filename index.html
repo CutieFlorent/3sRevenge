@@ -5,32 +5,42 @@
     <!-- 删除这个 viewport meta 标签 -->
     <title>3&5's Revenge</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap");
+
       body {
         display: flex;
         flex-direction: column;
         align-items: center;
         background-color: #faf8ef;
-        font-family: Arial, sans-serif;
+        /* font-family: "Cascadia Code", monospace; */
+        font-family: JetBrains Mono, monospace;
+        font-weight: 300;
+      }
+      button {
+        font: inherit;
       }
 
       .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 525px;
+        width: 545px;
         margin: 0px;
       }
 
       .title {
-        font-size: 30px;
-        font-weight: bold;
+        font-size: 25px;
+        /* font-weight: bold; */
         color: #776e65;
         text-align: center;
+        /* width: 45rem; */
       }
 
       .score-container {
         background: #bbada0;
-        padding: 15px 25px;
+        padding: 10px 20px;
+        /* width: 180px !important; */
+        /* width: 100%; */
         border-radius: 6px;
         color: white;
         text-align: center;
@@ -42,8 +52,10 @@
       }
 
       .score {
-        font-size: 25px;
-        font-weight: bold;
+        /* font-size: 25px; */
+        /* font-size: auto; */
+        font-size: clamp(1.5rem, 1vw, 4rem);
+        /* font-weight: bold; */
       }
 
       .game-container {
@@ -78,7 +90,7 @@
         background: #eee4da;
         border-radius: 3px;
         font-size: 35px;
-        font-weight: bold;
+        /* font-weight: bold; */
         color: #776e65;
         transition: all 0.15s ease-in-out;
       }
@@ -115,7 +127,7 @@
       .game-over-text {
         margin-top: 45%;
         font-size: 60px;
-        font-weight: bold;
+        /* font-weight: bold; */
         color: #776e65;
       }
 
@@ -182,7 +194,7 @@
         height: 40px;
         line-height: 42px;
         cursor: pointer;
-        font-weight: bold;
+        /* font-weight: bold; */
         margin-top: 20px;
       }
 
@@ -194,8 +206,8 @@
         color: #f9f6f2;
         height: 40px;
         cursor: pointer;
-        font-weight: bold;
-        margin-left: 10px;
+        /* font-weight: bold; */
+        margin: 10px;
       }
 
       .auto-button.active {
@@ -287,7 +299,8 @@
       <div class="title">
         3&5's Revenge
         <div class="rules">
-          Each merged block gives you a score of 15^n which is a divisor of it.
+          Create blocks with <br />
+          factor of 3s and 5s!
         </div>
       </div>
       <div class="score-container">

@@ -165,13 +165,17 @@ class Game {
     dialog.className = "gender-dialog";
     dialog.innerHTML = `
       <div class="dialog-content">
-        <h2>Do you want to be a girl?</h2>
+        <div>Do you want to be a girl?</div>
         <div class="dialog-buttons">
           <button id="yes-btn">Yes</button>
           <button id="no-btn">No</button>
         </div>
       </div>
     `;
+    dialog.style.fontFamily = "'Cascadia Code', monospace";
+    dialog.style.fontWeight = 300;
+    dialog.style.fontSize = "30px";
+    console.log(dialog.style.fontFamily, dialog.style.fontWeight);
     document.body.appendChild(dialog);
 
     // 添加按钮事件
@@ -329,29 +333,7 @@ class Game {
     if (value === 0) return "#cdc1b4";
     if (this.isFeminine === null) return "#FFFFF0"; // 如果性别未选择，返回默认颜色
 
-    function getPrimeFactors(num) {
-      let count2 = 0,
-        count3 = 0,
-        count5 = 0;
-      let n = num;
-
-      while (n % 2 === 0) {
-        count2++;
-        n = n / 2;
-      }
-      while (n % 3 === 0) {
-        count3++;
-        n = n / 3;
-      }
-      while (n % 5 === 0) {
-        count5++;
-        n = n / 5;
-      }
-
-      return { count2, count3, count5 };
-    }
-
-    const { count2, count3, count5 } = getPrimeFactors(value);
+    const { count2, count3, count5 } = this.getPrimeFactors(value);
     const total = count2 + count3 + count5;
 
     // 跨性别旗的白色、蓝色和粉色的RGB值
@@ -434,6 +416,15 @@ class Game {
         if (b === 0) return a;
         return gcd(b, a % b);
       };
+      this.score = 0;
+
+      for (let i = 0; i < this.size; i++) {
+        for (let j = 0; j < this.size; j++) {
+          if (this.grid[i][j] !== 0) {
+            this.score += this.gridScore(this.grid[i][j]);
+          }
+        }
+      }
 
       for (let i = 0; i < line.length - 1; i++) {
         const a = line[i];
@@ -452,19 +443,27 @@ class Game {
         ) {
           line[i] = line[i] + line[i + 1];
           // this.score += line[i];
-          document.querySelector(".score").textContent = this.score;
+          let score_display = this.score;
+          if (this.score >= 10000)
+            score_display = this.score
+              .toLocaleString("fr-FR")
+              .replace(/ /g, "\u2009");
+          document.querySelector(".score").textContent = score_display;
+          console.log(score_display);
           this.playMergeSound(line[i]); // 播放合并音效
           line.splice(i + 1, 1);
         }
       }
-      this.score = 0;
-      for (let i = 0; i < this.size; i++) {
-        for (let j = 0; j < this.size; j++) {
-          if (this.grid[i][j] !== 0) {
-            this.score += this.gridScore(this.grid[i][j]);
-          }
-        }
-      }
+      // this.score = 0;
+
+      // for (let i = 0; i < this.size; i++) {
+      //   for (let j = 0; j < this.size; j++) {
+      //     if (this.grid[i][j] !== 0) {
+      //       this.score += this.gridScore(this.grid[i][j]);
+      //     }
+      //   }
+      // }
+      // console.log(this.score);
 
       while (line.length < this.size) {
         line.push(0);
@@ -569,13 +568,33 @@ class Game {
 
     return true;
   }
-  gridScore(grid) {
-    let grid_copy = grid;
-    let score = grid;
-    while (grid_copy % 15 == 0) {
-      score *= 15;
-      grid_copy /= 15;
+  getPrimeFactors(num) {
+    let count2 = 0,
+      count3 = 0,
+      count5 = 0;
+    let n = num;
+
+    while (n % 2 === 0) {
+      count2++;
+      n = n / 2;
     }
+    while (n % 3 === 0) {
+      count3++;
+      n = n / 3;
+    }
+    while (n % 5 === 0) {
+      count5++;
+      n = n / 5;
+    }
+
+    return { count2, count3, count5 };
+  }
+  gridScore(grid) {
+    const { count2, count3, count5 } = this.getPrimeFactors(grid);
+    let score =
+      grid * 3 ** count3 * 5 ** count5 * 15 ** Math.min(count3, count5);
+    // console.log({ count2, count3, count5 }, score);
+    //增益是因子3,5和15累乘(15分别计算)
     return score;
   }
 
